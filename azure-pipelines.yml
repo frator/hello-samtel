@@ -104,8 +104,8 @@ stages:
         kubernetesServiceEndpoint: 'KubernetesConnection' # Cambia 'kubernetesServiceConnection' a 'kubernetesServiceEndpoint'
         namespace: $(kubernetesNamespace)
     - script: |
-        kubectl apply -f namespace.yml
-        kubectl apply -f deployment.yml
-        kubectl apply -f server.yml
-        kubectl apply -f ingress.yml
+        kubectl apply -f namespace.yaml
+        kubectl apply -f deployment.yaml
+        kubectl apply -f server.yaml
+        kubectl apply -f ingress.yaml
       displayName: Deploy Kubernetes Manifests
