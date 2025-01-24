@@ -9,7 +9,7 @@ jobs:
 
   container: 
     image: francotorres01/test-samtel:latest  # Imagen Docker basada en Debian/Ubuntu
-    options: '--user root'  
+    options: '--user root'
 
   steps:
 
@@ -19,6 +19,18 @@ jobs:
       apk update && apk add bash curl openjdk11
     displayName: 'Configurar Entorno'
 
+      # Verificar contenido del contenedor
+  - script: |
+      echo "Verificando contenido del contenedor..."
+      ls /app
+    displayName: "Verificar contenido del contenedor"
+
+  # Ejecutar el script principal en el contenedor
+  - script: |
+      echo "Ejecutando el script principal..."
+      python3 /app/main.py
+    displayName: "Ejecutar script principal"
+    
   # Paso 2.5: Verificar Python y Java
   - script: |
       python3 --version
