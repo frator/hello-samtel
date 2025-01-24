@@ -34,8 +34,7 @@ stages:
         SonarQube: $(sonarQubeServiceConnection)
         scannerMode: 'cli'
         configMode: 'manual'
-        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)_$(Build.SourceBranchName)'
-        cliProjectName: '$(SONARQUBE_PROJECT_KEY)_$(Build.SourceBranchName)'
+        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)'
 
     # Agregar tareas de construcción aquí si las necesitas para análisis de SonarQube
     - script: |
