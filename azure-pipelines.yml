@@ -8,7 +8,7 @@ variables:
   dockerRegistryServiceConnection: 'DockerHub' # La Service Connection a Docker Hub
   imageName: '$(imageName)' # Reemplaza con el nombre de tu imagen en Docker Hub
   targetImageName: '$(imageName)' # El nombre de la imagen final que quieres usar
-  imageTag: '${Build.BuildId}'
+  imageTag: '$(Build.BuildId)'
 
 stages:
 - stage: Build
