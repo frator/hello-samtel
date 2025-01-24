@@ -37,7 +37,7 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(targetImageName)     # Nombre del repositorio de la imagen
         tags: |
-          $(imageTag)                      # Etiqueta dinámica sin caracteres inválidos
+          $(imageTag)
 
     # Subir la imagen construida a Docker Hub
     - task: Docker@2
