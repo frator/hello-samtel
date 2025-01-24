@@ -17,19 +17,37 @@ stages:
   - job: Build
     displayName: Build Job
     steps:
+    # Clonar el repositorio y deshabilitar shallow fetch
     - checkout: self
       displayName: "Clonar el repositorio"
+      fetchDepth: 0
 
-    # Analizar código con SonarQube
-    - task: SonarQubePrepare@5
+    # Preparar el análisis de SonarQube
+    - task: SonarQubePrepare@7
       displayName: "Preparar análisis de SonarQube"
       inputs:
         SonarQube: $(sonarQubeServiceConnection) # Conexión de servicio a SonarQube
-        scannerMode: 'CLI' # Usa el modo CLI
+        scannerMode: 'cli'
         configMode: 'manual'
-        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el nombre único de tu proyecto en SonarQube
-        cliProjectName: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el nombre de tu proyecto
-        cliSources: '.' # Ruta al código fuente
+        cliProjectKey: 'your-project-key' # Cambia por el Project Key único en SonarQube
+
+    # Agregar tareas de construcción aquí si las necesitas para análisis de SonarQube
+    - script: |
+        echo "Compilando o preparando el proyecto para análisis..."
+        # Aquí puedes ejecutar compilación, pruebas, o pasos previos necesarios para SonarQube
+      displayName: "Construir y preparar para SonarQube"
+
+    # Ejecutar el análisis de código
+    - task: SonarQubeAnalyze@7
+      displayName: "Ejecutar análisis de SonarQube"
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
+
+    # Publicar los resultados del análisis en SonarQube
+    - task: SonarQubePublish@7
+      displayName: "Publicar resultados de SonarQube"
+      inputs:
+        pollingTimeoutSec: '300'
 
     # Autenticarse en Docker Hub
     - task: Docker@2
