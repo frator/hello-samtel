@@ -95,7 +95,7 @@ stages:
     - task: Kubernetes@1
       displayName: "Test Kubernetes Connection"
       inputs:
-        kubernetesServiceEndpoint: 'KubernetesConnection'
+        kubernetesServiceEndpoint: 'KubernetesConnection' # Asegúrate de usar el nombre exacto de la conexión
         command: 'get'
         arguments: 'nodes'
     - task: Kubernetes@1
