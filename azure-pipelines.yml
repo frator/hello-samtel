@@ -8,7 +8,8 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   container: 
-    image: python:3.10-slim # Imagen Docker específica
+    image: python:3.10-slim  # Imagen Docker basada en Debian/Ubuntu
+    options: '--user root'   # Ejecutar como usuario root
 
   steps:
   # Paso 1: Cambiar al directorio de trabajo
@@ -21,7 +22,7 @@ jobs:
   # Paso 2: Configurar el entorno
   - script: |
       echo "Instalando dependencias necesarias..."
-      sudo apt-get update && sudo apt-get install -y bash curl openjdk-11-jdk
+      apt-get update && apt-get install -y bash curl openjdk-11-jdk
     displayName: 'Configurar Entorno'
 
   # Paso 2.5: Verificar Python y Java
