@@ -32,8 +32,9 @@ stages:
         cliProjectKey: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el Project Key único en SonarQube
         cliProjectName: '$(SONARQUBE_PROJECT_KEY)'
         extraProperties: |
-          # Excluir análisis de ramas para evitar conflictos con la edición Community
-          sonar.branch.name=
+          sonar.branch.name=main
+          sonar.sources=.
+          sonar.host.url=$(SonarQubeServerUrl)
 
     # Agregar tareas de construcción aquí si las necesitas para análisis de SonarQube
     - script: |
