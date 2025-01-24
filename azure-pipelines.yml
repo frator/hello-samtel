@@ -21,8 +21,14 @@ jobs:
   # Paso 2: Configurar el entorno
   - script: |
       echo "Instalando dependencias necesarias..."
-      apk add --no-cache bash curl openjdk11
+      apt-get update && apt-get install -y bash curl openjdk-11-jdk
     displayName: 'Configurar Entorno'
+
+  # Paso 2.5: Verificar Python y Java
+  - script: |
+      python --version
+      java -version
+    displayName: 'Verificar instalación'
 
   # Paso 3: Preparar SonarQube
   - task: SonarQubePrepare@5
@@ -39,7 +45,7 @@ jobs:
   # Paso 4: Compilar y/o analizar el código
   - script: |
       echo "Analizando el código fuente..."
-      python3 --version
+      python --version
       python3 -m pip install -r requirements.txt || true
     displayName: 'Compilar Proyecto'
     workingDirectory: $(System.DefaultWorkingDirectory)/app
