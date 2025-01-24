@@ -5,9 +5,12 @@ metadata:
   namespace: samtel
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    # Si usas AWS ALB Ingress Controller, agrega estas anotaciones:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
 spec:
   rules:
-  - host: ""
+  - host: "*" # Usar wildcard para aceptar cualquier host (cambia según tu dominio)
     http:
       paths:
       - path: /
