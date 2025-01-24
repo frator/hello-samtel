@@ -6,9 +6,8 @@ pool:
 
 variables:
   dockerRegistryServiceConnection: 'DockerHub' # La Service Connection a Docker Hub
-  imageName: '$(imageName)' # Reemplaza con el nombre de tu imagen en Docker Hub
-  targetImageName: '$(imageName)' # El nombre de la imagen final que quieres usar
-  imageTag: '$(Build.BuildId)'
+  imageName: 'usuario/mi-imagen' # Nombre de la imagen en Docker Hub (sin etiquetas)
+  imageTag: '$(Build.BuildId)'  # Tag dinámico basado en el ID de la build
 
 stages:
 - stage: Build
@@ -35,9 +34,9 @@ stages:
         dockerfile: app/Dockerfile         # Ruta al Dockerfile en la carpeta app
         buildContext: app                  # Contexto de construcción
         containerRegistry: $(dockerRegistryServiceConnection)
-        repository: $(targetImageName)     # Nombre del repositorio de la imagen
+        repository: $(imageName)           # Nombre de la imagen sin etiquetas
         tags: |
-          $(imageTag)
+          $(imageTag)                      # Etiqueta basada en el Build ID
 
     # Subir la imagen construida a Docker Hub
     - task: Docker@2
@@ -45,6 +44,6 @@ stages:
       inputs:
         command: push
         containerRegistry: $(dockerRegistryServiceConnection)
-        repository: $(targetImageName)
+        repository: $(imageName)
         tags: |
           $(imageTag)
