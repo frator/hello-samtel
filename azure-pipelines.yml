@@ -21,7 +21,7 @@ jobs:
   # Paso 2: Configurar el entorno
   - script: |
       echo "Instalando dependencias necesarias..."
-      apt-get update && apt-get install -y bash curl openjdk-11-jdk
+      sudo apt-get update && sudo apt-get install -y bash curl openjdk-11-jdk
     displayName: 'Configurar Entorno'
 
   # Paso 2.5: Verificar Python y Java
