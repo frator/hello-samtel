@@ -48,11 +48,11 @@ stages:
       inputs:
         jdkversion: 'JAVA_HOME_17_X64'
 
-    # Publicar los resultados del análisis en SonarQube
-    - task: SonarQubePublish@7
-      displayName: "Publicar resultados de SonarQube"
-      inputs:
-        pollingTimeoutSec: '300'
+#    # Publicar los resultados del análisis en SonarQube
+#    - task: SonarQubePublish@7
+#      displayName: "Publicar resultados de SonarQube"
+#      inputs:
+#        pollingTimeoutSec: '300'
 
     # Autenticarse en Docker Hub
     - task: Docker@2
