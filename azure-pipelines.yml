@@ -1,66 +1,55 @@
 trigger:
-- main  # Cambia 'main' por la rama que deseas usar
+- main # Cambia 'main' por la rama que activará el pipeline
 
-jobs:
-- job: SonarQubeAnalysis
-  displayName: "SonarQube Analysis using Docker"
-  pool:
-    vmImage: 'ubuntu-latest'
+pool:
+  vmImage: 'ubuntu-latest'
 
-  container: 
-    image: francotorres01/test-samtel:latest  # Imagen Docker basada en Debian/Ubuntu
-    options: '--user root'
+variables:
+  dockerRegistryServiceConnection: 'DockerHub' # La Service Connection a Docker Hub
+  imageName: '$(imageName)' # Reemplaza con el nombre de tu imagen en Docker Hub
+  targetImageName: '$(imageName)' # El nombre de la imagen final que quieres usar
 
-  steps:
+stages:
+- stage: Build
+  displayName: Build and Push Docker Image
+  jobs:
+  - job: Build
+    displayName: Build Job
+    steps:
+    # Verifica que el repositorio se clona correctamente
+    - checkout: self
+      displayName: "Clonar el repositorio"
 
-  # Paso 2: Configurar el entorno
-  - script: |
-      echo "Instalando dependencias necesarias..."
-      apk update && apk add bash curl openjdk11
-    displayName: 'Configurar Entorno'
+    # Autenticarse en Docker Hub
+    - task: Docker@2
+      displayName: "Login en Docker Hub"
+      inputs:
+        command: login
+        containerRegistry: $(dockerRegistryServiceConnection)
 
-      # Verificar contenido del contenedor
-  - script: |
-      echo "Verificando contenido del contenedor..."
-      ls /app
-    displayName: "Verificar contenido del contenedor"
+    # Traer la imagen base desde Docker Hub
+    - script: |
+        echo "Descargando imagen base desde Docker Hub..."
+        docker pull $(imageName)
+      displayName: "Pull de imagen base desde Docker Hub"
 
-  # Ejecutar el script principal en el contenedor
-  - script: |
-      echo "Ejecutando el script principal..."
-      python3 /app/main.py
-    displayName: "Ejecutar script principal"
-    
-  # Paso 2.5: Verificar Python y Java
-  - script: |
-      python3 --version
-      java -version
-    displayName: 'Verificar instalación'
+    # Construir la nueva imagen usando la imagen base
+    - task: Docker@2
+      displayName: "Construir imagen Docker"
+      inputs:
+        command: build
+        dockerfile: Dockerfile
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(targetImageName)
+        tags: |
+          $(Build.BuildId)
 
-  # Paso 3: Preparar SonarQube
-  - task: SonarQubePrepare@5
-    inputs:
-      scannerMode: 'CLI'
-      configMode: 'manual'
-      cliProjectKey: $(SONARQUBE_PROJECT_KEY)
-      cliProjectName: $(SONARQUBE_PROJECT_KEY)
-      cliSources: './'  # Analizar solo la carpeta app
-      extraProperties: |
-        sonar.host.url=$(SONARQUBE_HOST_URL)
-        sonar.login=$(SONARQUBE_TOKEN)
-
-  # Paso 4: Compilar y/o analizar el código
-  - script: |
-      echo "Analizando el código fuente..."
-      python3 --version
-      python3 -m pip install -r requirements.txt || true
-    displayName: 'Compilar Proyecto'
-    workingDirectory: $(System.DefaultWorkingDirectory)/app
-
-  # Paso 5: Ejecutar el análisis de SonarQube
-  - task: SonarQubeAnalyze@5
-
-  # Paso 6: Publicar resultados en SonarQube
-  - task: SonarQubePublish@5
-    inputs:
-      pollingTimeoutSec: '300'
+    # Subir la imagen construida a Docker Hub
+    - task: Docker@2
+      displayName: "Push de la imagen a Docker Hub"
+      inputs:
+        command: push
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(targetImageName)
+        tags: |
+          $(Build.BuildId)
