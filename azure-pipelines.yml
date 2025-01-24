@@ -6,6 +6,7 @@ pool:
 
 variables:
   dockerRegistryServiceConnection: 'DockerHub' # La Service Connection a Docker Hub
+  sonarQubeServiceConnection: 'SonarQube' # La Service Connection a SonarQube
   imageName: '$(DockerImageName)' # Nombre de la imagen en Docker Hub (sin etiquetas)
   imageTag: '$(Build.BuildId)'  # Tag dinámico basado en el ID de la build
 
@@ -18,6 +19,17 @@ stages:
     steps:
     - checkout: self
       displayName: "Clonar el repositorio"
+
+    # Analizar código con SonarQube
+    - task: SonarQubePrepare@5
+      displayName: "Preparar análisis de SonarQube"
+      inputs:
+        SonarQube: $(sonarQubeServiceConnection) # Conexión de servicio a SonarQube
+        scannerMode: 'CLI' # Usa el modo CLI
+        configMode: 'manual'
+        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el nombre único de tu proyecto en SonarQube
+        cliProjectName: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el nombre de tu proyecto
+        cliSources: '.' # Ruta al código fuente
 
     # Autenticarse en Docker Hub
     - task: Docker@2
