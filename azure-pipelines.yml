@@ -16,7 +16,6 @@ stages:
   - job: Build
     displayName: Build Job
     steps:
-    # Verifica que el repositorio se clona correctamente
     - checkout: self
       displayName: "Clonar el repositorio"
 
