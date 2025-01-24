@@ -42,7 +42,7 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(targetImageName)
         tags: |
-          $(Build.BuildId)
+          $(imageTag)
 
     # Subir la imagen construida a Docker Hub
     - task: Docker@2
@@ -52,4 +52,4 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(targetImageName)
         tags: |
-          $(Build.BuildId)
+          $(imageTag)
