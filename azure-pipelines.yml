@@ -82,3 +82,24 @@ stages:
         repository: $(imageName)
         tags: |
           $(imageTag)
+    
+- stage: Deploy
+  displayName: "Deploy to EKS"
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    displayName: Deploy to Kubernetes
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Kubernetes@1
+      displayName: "Set Kubernetes Context"
+      inputs:
+        kubernetesServiceConnection: 'KubernetesConnection'
+        namespace: $(kubernetesNamespace)
+    - script: |
+        kubectl apply -f namespace.yml
+        kubectl apply -f deployment.yml
+        kubectl apply -f server.yml
+        kubectl apply -f ingress.yml
+      displayName: Deploy Kubernetes Manifests
