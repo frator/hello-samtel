@@ -1,5 +1,5 @@
 trigger:
-- main # Cambia 'main' por la rama que activará el pipeline
+- none
 
 pool:
   vmImage: 'ubuntu-latest'
