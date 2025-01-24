@@ -93,9 +93,15 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - task: Kubernetes@1
+      displayName: "Test Kubernetes Connection"
+      inputs:
+        kubernetesServiceEndpoint: 'KubernetesConnection'
+        command: 'get'
+        arguments: 'nodes'
+    - task: Kubernetes@1
       displayName: "Set Kubernetes Context"
       inputs:
-        kubernetesServiceConnection: 'KubernetesConnection'
+        kubernetesServiceEndpoint: 'KubernetesConnection' # Cambia 'kubernetesServiceConnection' a 'kubernetesServiceEndpoint'
         namespace: $(kubernetesNamespace)
     - script: |
         kubectl apply -f namespace.yml
