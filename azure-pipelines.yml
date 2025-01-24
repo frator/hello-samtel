@@ -1,6 +1,11 @@
 trigger:
-- none
-
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - azure-pipelines.yml  # Ignora cambios en el archivo del pipeline
+      
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -32,7 +37,7 @@ stages:
         cliProjectKey: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el Project Key único en SonarQube
         cliProjectName: '$(SONARQUBE_PROJECT_KEY)'
         extraProperties: |
-          sonar.branch.name=main
+          sonar.branch.name=
           sonar.sources=.
           sonar.host.url=http://138.121.202.146:9000
 
