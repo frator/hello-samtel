@@ -34,9 +34,9 @@ stages:
         dockerfile: app/Dockerfile         # Ruta al Dockerfile en la carpeta app
         buildContext: app                  # Contexto de construcción
         containerRegistry: $(dockerRegistryServiceConnection)
-        repository: $(imageName)           # Nombre de la imagen sin etiquetas
+        repository: $(imageName)           # Nombre de la imagen
         tags: |
-          $(imageTag)                      # Etiqueta basada en el Build ID
+          $(imageTag)
 
     # Subir la imagen construida a Docker Hub
     - task: Docker@2
