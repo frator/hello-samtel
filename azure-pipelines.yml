@@ -1,0 +1,43 @@
+trigger:
+- main  # Cambia "main" por la rama que desees activar.
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  SONARQUBE_HOST_URL: 'http://138.121.202.146:9000'
+  SONARQUBE_PROJECT_KEY: 'hello-samtel'
+  SONARQUBE_TOKEN: '<TU_TOKEN_DE_AUTENTICACION>'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- checkout: self
+
+# Configura SonarQube
+- task: SonarQubePrepare@5
+  inputs:
+    SonarQube: 'SonarQube'  # Nombre del servicio que configuraste en Azure DevOps.
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(SONARQUBE_PROJECT_KEY)'
+    cliProjectName: 'hello-samtel'
+    cliSources: '.'
+
+# Compila tu proyecto (ajusta el comando según tu tecnología)
+- script: |
+    echo "Compilando el proyecto..."
+    # Por ejemplo, para un proyecto en Python
+    python -m pip install -r requirements.txt
+  displayName: 'Build Project'
+
+# Ejecutar análisis con SonarQube
+- task: SonarQubeAnalyze@5
+
+# Publica resultados en SonarQube
+- task: SonarQubePublish@5
+  inputs:
+    pollingTimeoutSec: '300'
