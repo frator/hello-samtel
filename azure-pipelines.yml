@@ -8,32 +8,16 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   container: 
-    image: python:3.10-slim  # Imagen Docker basada en Debian/Ubuntu
+    image: francotorres01/test-samtel:latest  # Imagen Docker basada en Debian/Ubuntu
     options: '--user root --privileged'  
 
   steps:
-  # Paso 1: Cambiar al directorio de trabajo
-  - script: |
-      cd app
-      echo "Ahora trabajando en la carpeta $(pwd)"
-    displayName: 'Cambiar al directorio app'
-    workingDirectory: $(System.DefaultWorkingDirectory)/app
-    
-  # Establecer un directorio alternativo para apt
-  - script: |
-      echo "Configurando entorno de APT en un directorio temporal..."
-      mkdir -p /tmp/apt/lists/partial
-      mkdir -p /tmp/apt/cache
-      chmod -R 777 /tmp/apt
-      apt-get -o Dir::State::Lists=/tmp/apt/lists -o Dir::Cache::Archives=/tmp/apt/cache update
-      apt-get -o Dir::State::Lists=/tmp/apt/lists -o Dir::Cache::Archives=/tmp/apt/cache install -y bash curl openjdk-11-jdk
-    displayName: 'Configurar entorno con APT'
 
   # Paso 2: Configurar el entorno
-#  - script: |
-#      echo "Instalando dependencias necesarias..."
-#      apt-get update && apt-get install -y bash curl openjdk-11-jdk
-#    displayName: 'Configurar Entorno'
+  - script: |
+      echo "Instalando dependencias necesarias..."
+      apk update && apk add bash curl openjdk11
+    displayName: 'Configurar Entorno'
 
   # Paso 2.5: Verificar Python y Java
   - script: |
