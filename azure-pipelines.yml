@@ -18,6 +18,13 @@ jobs:
       echo "Ahora trabajando en la carpeta $(pwd)"
     displayName: 'Cambiar al directorio app'
     workingDirectory: $(System.DefaultWorkingDirectory)/app
+    
+  - script: |
+      echo "Corrigiendo permisos en /var/lib/apt/lists..."
+      mkdir -p /var/lib/apt/lists/partial
+      chmod -R 777 /var/lib/apt/lists
+      apt-get clean
+    displayName: 'Corregir permisos en /var/lib/apt/lists'
 
   # Paso 2: Configurar el entorno
   - script: |
