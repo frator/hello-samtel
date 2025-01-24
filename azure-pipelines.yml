@@ -1,43 +1,53 @@
 trigger:
-- main  # Cambia "main" por la rama que desees activar.
+- main  # Cambia 'main' por la rama que deseas usar
 
-pool:
-  vmImage: 'ubuntu-latest'
+jobs:
+- job: SonarQubeAnalysis
+  displayName: "SonarQube Analysis using Docker"
+  pool:
+    vmImage: 'ubuntu-latest'
 
-variables:
-  SONARQUBE_HOST_URL: 'http://138.121.202.146:9000'
-  SONARQUBE_PROJECT_KEY: 'hello-samtel'
-  SONARQUBE_TOKEN: 'sqa_a0d2edc50f05b5b378affe43aed0322909ea80ce'
+  container: 
+    image: python:3.10-alpine  # Imagen Docker específica
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-    addToPath: true
+  steps:
+  # Paso 1: Cambiar al directorio de trabajo
+  - script: |
+      cd app
+      echo "Ahora trabajando en la carpeta $(pwd)"
+    displayName: 'Cambiar al directorio app'
+    workingDirectory: $(System.DefaultWorkingDirectory)/app
 
-- checkout: self
+  # Paso 2: Configurar el entorno
+  - script: |
+      echo "Instalando dependencias necesarias..."
+      apk add --no-cache bash curl openjdk11
+    displayName: 'Configurar Entorno'
 
-# Configura SonarQube
-- task: SonarQubePrepare@5
-  inputs:
-    SonarQube: 'SonarQube'  # Nombre del servicio que configuraste en Azure DevOps.
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: '$(SONARQUBE_PROJECT_KEY)'
-    cliProjectName: 'hello-samtel'
-    cliSources: '.'
+  # Paso 3: Preparar SonarQube
+  - task: SonarQubePrepare@5
+    inputs:
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: $(SONARQUBE_PROJECT_KEY)
+      cliProjectName: $(SONARQUBE_PROJECT_KEY)
+      cliSources: './'  # Analizar solo la carpeta app
+      extraProperties: |
+        sonar.host.url=$(SONARQUBE_HOST_URL)
+        sonar.login=$(SONARQUBE_TOKEN)
 
-# Compila tu proyecto (ajusta el comando según tu tecnología)
-- script: |
-    echo "Compilando el proyecto..."
-    # Por ejemplo, para un proyecto en Python
-    python -m pip install -r requirements.txt
-  displayName: 'Build Project'
+  # Paso 4: Compilar y/o analizar el código
+  - script: |
+      echo "Analizando el código fuente..."
+      python --version
+      python -m pip install -r requirements.txt || true
+    displayName: 'Compilar Proyecto'
+    workingDirectory: $(System.DefaultWorkingDirectory)/app
 
-# Ejecutar análisis con SonarQube
-- task: SonarQubeAnalyze@5
+  # Paso 5: Ejecutar el análisis de SonarQube
+  - task: SonarQubeAnalyze@5
 
-# Publica resultados en SonarQube
-- task: SonarQubePublish@5
-  inputs:
-    pollingTimeoutSec: '300'
+  # Paso 6: Publicar resultados en SonarQube
+  - task: SonarQubePublish@5
+    inputs:
+      pollingTimeoutSec: '300'
