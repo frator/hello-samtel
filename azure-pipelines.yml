@@ -6,7 +6,7 @@ pool:
 
 variables:
   dockerRegistryServiceConnection: 'DockerHub' # La Service Connection a Docker Hub
-  imageName: 'usuario/mi-imagen' # Nombre de la imagen en Docker Hub (sin etiquetas)
+  imageName: '$(DockerImageName)' # Nombre de la imagen en Docker Hub (sin etiquetas)
   imageTag: '$(Build.BuildId)'  # Tag dinámico basado en el ID de la build
 
 stages:
