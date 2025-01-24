@@ -8,7 +8,7 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   container: 
-    image: python:3.10-alpine  # Imagen Docker específica
+    image: python:3.10-slim # Imagen Docker específica
 
   steps:
   # Paso 1: Cambiar al directorio de trabajo
@@ -39,8 +39,8 @@ jobs:
   # Paso 4: Compilar y/o analizar el código
   - script: |
       echo "Analizando el código fuente..."
-      python --version
-      python -m pip install -r requirements.txt || true
+      python3 --version
+      python3 -m pip install -r requirements.txt || true
     displayName: 'Compilar Proyecto'
     workingDirectory: $(System.DefaultWorkingDirectory)/app
 
