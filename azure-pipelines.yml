@@ -6,7 +6,7 @@ pool:
 
 variables:
   dockerRegistryServiceConnection: 'DockerHub' # La Service Connection a Docker Hub
-  imageName: '$(imageName)' # Reemplaza con el nombre de tu imagen en Docker Hub
+  imageName: 'python:3.10-alpine' # Reemplaza con el nombre de tu imagen en Docker Hub
   targetImageName: '$(imageName)' # El nombre de la imagen final que quieres usar
 
 stages:
@@ -32,12 +32,13 @@ stages:
         docker pull $(imageName)
       displayName: "Pull de imagen base desde Docker Hub"
 
-    # Construir la nueva imagen usando la imagen base
+    # Construir la nueva imagen usando el Dockerfile en la carpeta app
     - task: Docker@2
-      displayName: "Construir imagen Docker"
+      displayName: "Construir imagen Docker desde app/Dockerfile"
       inputs:
         command: build
-        dockerfile: Dockerfile
+        dockerfile: app/Dockerfile # Ruta al Dockerfile en la carpeta app
+        buildContext: app          # Contexto de construcción en la carpeta app
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(targetImageName)
         tags: |
