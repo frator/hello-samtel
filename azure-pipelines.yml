@@ -29,7 +29,7 @@ stages:
         SonarQube: $(sonarQubeServiceConnection) # Conexión de servicio a SonarQube
         scannerMode: 'cli'
         configMode: 'manual'
-        cliProjectKey: 'your-project-key' # Cambia por el Project Key único en SonarQube
+        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el Project Key único en SonarQube
 
     # Agregar tareas de construcción aquí si las necesitas para análisis de SonarQube
     - script: |
