@@ -31,11 +31,11 @@ stages:
     - task: SonarQubePrepare@7
       displayName: "Preparar análisis de SonarQube"
       inputs:
-        SonarQube: $(sonarQubeServiceConnection) # Conexión de servicio a SonarQube
+        SonarQube: $(sonarQubeServiceConnection)
         scannerMode: 'cli'
         configMode: 'manual'
-        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)' # Cambia por el Project Key único en SonarQube
-        cliProjectName: '$(SONARQUBE_PROJECT_KEY)'
+        cliProjectKey: '$(SONARQUBE_PROJECT_KEY)_$(Build.SourceBranchName)'
+        cliProjectName: '$(SONARQUBE_PROJECT_KEY)_$(Build.SourceBranchName)'
 
     # Agregar tareas de construcción aquí si las necesitas para análisis de SonarQube
     - script: |
