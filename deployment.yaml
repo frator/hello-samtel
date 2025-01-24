@@ -18,6 +18,7 @@ spec:
       containers:
       - name: web
         image: francotorres01/test-samtel:latest
+        imagePullPolicy: Always # Asegúrate de siempre obtener la última imagen
         ports:
         - containerPort: 8000
         command: ["python3"]
@@ -26,3 +27,15 @@ spec:
           preStop:
             exec:
               command: ["sh", "-c", "kill -SIGINT 1"]
+        readinessProbe: # Verifica si el contenedor está listo para recibir tráfico
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe: # Verifica si el contenedor está vivo
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 15
