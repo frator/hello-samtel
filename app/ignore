@@ -1,0 +1,18 @@
+WITH IndexStats AS (
+    SELECT  
+        OBJECT_NAME(i.object_id) AS TableName,
+        i.name AS IndexName,
+        ps.index_id,
+        ps.index_type_desc,
+        ps.avg_fragmentation_in_percent,
+        ps.page_count
+    FROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, 'LIMITED') ps
+    JOIN sys.indexes i ON ps.object_id = i.object_id AND ps.index_id = i.index_id
+)
+SELECT 
+    TableName,
+    SUM(page_count) AS TotalPages,
+    MAX(avg_fragmentation_in_percent) AS MaxFragmentation
+FROM IndexStats
+GROUP BY TableName
+ORDER BY MaxFragmentation DESC, TotalPages DESC;
