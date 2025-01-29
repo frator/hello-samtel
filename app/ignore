@@ -16,3 +16,50 @@ SELECT
 FROM IndexStats
 GROUP BY TableName
 ORDER BY MaxFragmentation DESC, TotalPages DESC;
+
+
+
+
+DECLARE @dbName NVARCHAR(255);
+DECLARE @logName NVARCHAR(255);
+DECLARE @sql NVARCHAR(MAX);
+
+-- Cursor para recorrer todas las bases de datos excepto las del sistema
+DECLARE db_cursor CURSOR FOR
+SELECT name 
+FROM sys.databases 
+WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')  -- Excluir bases de datos del sistema
+AND state_desc = 'ONLINE';  -- Solo las bases de datos que estén en línea
+
+OPEN db_cursor;
+FETCH NEXT FROM db_cursor INTO @dbName;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    -- Obtener el nombre del archivo de log para la base de datos actual
+    SELECT @logName = name 
+    FROM sys.master_files 
+    WHERE type = 1  -- type = 1 es para archivos de log
+    AND database_id = DB_ID(@dbName);
+
+    -- Construir el comando para cambiar el recovery a SIMPLE, reducir el archivo de log, y devolverlo a FULL
+    SET @sql = N'
+    USE [' + @dbName + '];
+    -- Cambiar el recovery a SIMPLE
+    ALTER DATABASE [' + @dbName + '] SET RECOVERY SIMPLE;
+    -- Reducir el archivo de log a 1 MB
+    DBCC SHRINKFILE ([' + @logName + '], 1);
+    -- Cambiar el recovery a FULL
+    ALTER DATABASE [' + @dbName + '] SET RECOVERY FULL;
+    ';
+
+    -- Ejecutar el comando generado
+    EXEC sp_executesql @sql;
+
+    -- Pasar a la siguiente base de datos
+    FETCH NEXT FROM db_cursor INTO @dbName;
+END
+
+-- Cerrar y liberar el cursor
+CLOSE db_cursor;
+DEALLOCATE db_cursor;
